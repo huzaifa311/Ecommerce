@@ -3,7 +3,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -12,6 +11,9 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../../config';
+import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
     return (
@@ -33,14 +35,66 @@ const defaultTheme = createTheme();
 export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const navigate = useNavigate()
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(email, password)
         try {
-            axios.post()
-        } catch (error) {
+            console.log(email, password)
+            const objToSend = {
+                email,
+                password
+            }
             
+            console.log(response);
+
+            if (response.data.status) {
+                toast.success(response.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+
+                if (response.data.isVerify) {
+                    localStorage.setItem('token', response.data.token)
+                    navigate('/')
+                }else{
+                    navigate('/otp', {
+                        state:{
+                            email
+                        }
+                    })
+                }
+
+            } else {
+                toast.error(response.data.message, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            }
+
+        } catch (error) {
+            toast.error(error.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         }
     };
 
@@ -71,7 +125,7 @@ export default function SignIn() {
                             label="Email Address"
                             name="email"
                             autoComplete="email"
-                            onChange={e=>setEmail(e.target.value)}
+                            onChange={e => setEmail(e.target.value)}
                             autoFocus
                         />
                         <TextField
@@ -83,7 +137,7 @@ export default function SignIn() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            onChange={e=>setPassword(e.target.value)}
+                            onChange={e => setPassword(e.target.value)}
                         />
                         <Button
                             type="submit"
@@ -94,13 +148,13 @@ export default function SignIn() {
                             Sign In
                         </Button>
                         <Grid container>
-                            <Grid item xs>
+                            {/* <Grid item xs>
                                 <Link href="#" variant="body2">
                                     Forgot password?
                                 </Link>
-                            </Grid>
+                            </Grid> */}
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link to={'/signup'} variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>

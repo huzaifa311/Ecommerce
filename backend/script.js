@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const router = require('./Routes');
+const router = require('./routes');
 const app = express();
 const Port = 3000;
 

@@ -15,7 +15,6 @@ const Home = () => {
   }, [])
   return (
     <>
-      <Header />
       <div className='flex flex-col place-items-center bg-gray-200'>
         <div className='max-w-[1800px] px-[5%] bg-green-200 py-3'>
           <Box>

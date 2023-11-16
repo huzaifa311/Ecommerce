@@ -14,6 +14,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../../config';
 import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
     return (
@@ -34,17 +35,25 @@ const defaultTheme = createTheme();
 
 export default function OTPCode() {
     const [OtpCode, setOtpCode] = useState('')
+    const navigate = useNavigate()
+    const { state } = useLocation();
+
+    React.useEffect(() => {
+        if (!state?.email) {
+            navigate('/signup')
+        }
+    }, [])
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(OtpCode)
         try {
             const objToSend = {
-                email,
-                password,
-                fullName
+                email: state.email,
+                otpCode: OtpCode
             }
-            const response = await axios.post(`${BASE_URL}/signup`, objToSend)
+            const response = await axios.post(`${BASE_URL}/otp-verification`, objToSend)
             console.log(response);
             if (response?.data.status) {
                 toast.success(response.data.message, {
@@ -57,7 +66,8 @@ export default function OTPCode() {
                     progress: undefined,
                     theme: "light",
                 });
-            }else{
+                navigate('/login')
+            } else {
                 toast.error(response.data.message, {
                     position: "top-right",
                     autoClose: 5000,
@@ -109,6 +119,7 @@ export default function OTPCode() {
                             label="OTP CODE"
                             onChange={e => setOtpCode(e.target.value)}
                             autoFocus
+                            type='number'
                         />
                         <Button
                             type="submit"

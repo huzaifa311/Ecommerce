@@ -6,7 +6,7 @@ const EmailVerfication = require('../templates/verification');
 const otpModel = require('../model/otpSchema');
 
 const signupController = async (req, res) => {
-    
+
     try {
         const body = req.body;
         console.log(body);
@@ -43,9 +43,9 @@ const signupController = async (req, res) => {
             return
         };
 
-        
+
         const OTPCODE = Math.floor(100000 + Math.random() * 900000);
-        
+
         const transporter = nodemailer.createTransport({
             service: "gmail",
             port: 587,
@@ -61,9 +61,9 @@ const signupController = async (req, res) => {
             subject: "Email Verfication",
             html: EmailVerfication(fullName, OTPCODE),
         });
-        
+
         await otpModel.create({
-            opt_code: OTPCODE,
+            otp_code: OTPCODE,
             email
         })
 
@@ -87,6 +87,16 @@ const signupController = async (req, res) => {
 const loginController = async (req, res) => {
 
     const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.json({
+            message: "Required fields are missing!",
+            status: false,
+            data: null,
+            isVerify: false
+        });
+        return
+    };
     console.log(`email:${email}`, `password:${password}`);
 
     const emailExist = await userModel.findOne({ email });
@@ -95,15 +105,29 @@ const loginController = async (req, res) => {
     if (!emailExist) {
         res.json({
             message: "Invalid Credentials",
-            status: true,
-            data: null
+            status: false,
+            data: null,
+            isVerify: false
         });
         return
     }
 
+
+
     const comparePass = await bcrypt.compare(password, emailExist.password)
 
     if (comparePass) {
+
+        if(!emailExist.isVerify){
+            res.json({
+                message: "Please Verify Your Account",
+                status: true,
+                isVerify: false,
+                data: null,
+            });
+            return
+        }
+
         var token = jwt.sign({ email: emailExist.email }, "PRIVATEKEY");
         console.log('token', token);
 
@@ -111,7 +135,8 @@ const loginController = async (req, res) => {
             message: "user login successful",
             status: true,
             data: emailExist,
-            token
+            token,
+            isVerify: true
         })
         return
     } else {
@@ -124,7 +149,64 @@ const loginController = async (req, res) => {
     }
 }
 
+const OTPVerify = async (req, res) => {
+    try {
+        const { email, otpCode } = req.body
+        if (!email || !otpCode) {
+            res.json({
+                message: "Required fields are missing",
+                status: false,
+                data: null,
+            });
+            return
+        }
+
+        const isValid = await otpModel.findOne({
+            otp_code: otpCode,
+            email,
+            isUsed: false,
+        })
+        if (!isValid) {
+            res.json({
+                message: "Invalid OTP",
+                status: false,
+                data: null,
+            });
+            return;
+        }
+
+        await otpModel.updateOne(
+            {
+                otp_code: otpCode,
+                email,
+                isUsed: false,
+            },
+            { isUsed: true }
+        );
+
+        await userModel.updateOne(
+            {
+                email,
+            },
+            { isVerify: true }
+        );
+        res.json({
+            message: "User Successfully Signup",
+            status: true,
+            data: null,
+        });
+        console.log("isValid", isValid);
+    } catch (error) {
+        res.json({
+            message: error.message,
+            data: null,
+            status: false
+        })
+    }
+}
+
 module.exports = {
     signupController,
-    loginController
+    loginController,
+    OTPVerify
 }

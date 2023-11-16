@@ -8,7 +8,6 @@ const Cart = () => {
     console.log(items, 'cart items');
     return (
         <>
-            <Header />
             <div className='flex flex-col place-items-center bg-gray-200'>
                 <div className='max-w-[1800px] bg-green-200 py-3'>
                     <Box>

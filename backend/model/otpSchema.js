@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-    opt_code : {
+    otp_code: {
         type: String,
         required: true
     },
-    email : {
+    email: {
         type: String,
         required: true
     },
     isUsed: {
+        type: Boolean,
+        required: true,
         default: false,
-        require: true,
-        type: Boolean
     }
 });
 
