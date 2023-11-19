@@ -11,9 +11,9 @@ const signupController = async (req, res) => {
         const body = req.body;
         console.log(body);
 
-        const { fullName, email, password } = body;
+        const { fullName, email, password, userType } = body;
 
-        if (!fullName || !email || !password) {
+        if (!fullName || !email || !password || !userType) {
             res.json({
                 message: "Required fields are missing!",
                 status: false,
@@ -28,7 +28,8 @@ const signupController = async (req, res) => {
         const objToSend = {
             full_name: fullName,
             email,
-            password: hashPassword
+            password: hashPassword,
+            user_type: userType
         };
 
         const emailExist = await userModel.findOne({ email });

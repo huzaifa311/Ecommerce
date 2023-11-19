@@ -10,10 +10,11 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../config';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginAction } from '../../Store/Slices/authSlice';
+import { CircularColor } from '../../Components';
 
 function Copyright(props) {
     return (
@@ -36,53 +37,19 @@ export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const {loading} = useSelector(state=>state.authSlice)
+    console.log(loading, 'loading');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            console.log(email, password)
+            /* console.log(email, password) */
             const objToSend = {
                 email,
                 password
             }
-            
-            console.log(response);
-
-            if (response.data.status) {
-                toast.success(response.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
-
-                if (response.data.isVerify) {
-                    localStorage.setItem('token', response.data.token)
-                    navigate('/')
-                }else{
-                    navigate('/otp', {
-                        state:{
-                            email
-                        }
-                    })
-                }
-
-            } else {
-                toast.error(response.data.message, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                });
-            }
+            dispatch(loginAction({objToSend, navigate}))
 
         } catch (error) {
             toast.error(error.message, {
@@ -139,14 +106,15 @@ export default function SignIn() {
                             autoComplete="current-password"
                             onChange={e => setPassword(e.target.value)}
                         />
-                        <Button
+                        {loading ? <CircularColor /> :<Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Sign In
-                        </Button>
+                        </Button>}
+                        
                         <Grid container>
                             {/* <Grid item xs>
                                 <Link href="#" variant="body2">

@@ -14,6 +14,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../config';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
+import { CircularColor } from '../../Components';
 
 function Copyright(props) {
     return (
@@ -35,16 +36,20 @@ const defaultTheme = createTheme();
 export default function SignUp() {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
+    const [userType, setUserType] = useState('user')
     const [password, setPassword] = useState('')
     const [fullName, setFullName] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(email, password, fullName)
+        setLoading(true)
+        console.log(email, password, fullName, userType)
         const objToSend = {
             email,
             password,
-            fullName
+            fullName,
+            userType
         }
         try {
 
@@ -62,10 +67,11 @@ export default function SignUp() {
                     theme: "light",
                 });
                 navigate('/otp', {
-                    state:{
+                    state: {
                         email
                     }
                 })
+                setLoading(false)
             } else {
                 toast.error(response.data.message, {
                     position: "top-right",
@@ -77,6 +83,7 @@ export default function SignUp() {
                     progress: undefined,
                     theme: "light",
                 });
+                setLoading(false)
             }
         } catch (error) {
             toast.error(error.message, {
@@ -89,6 +96,8 @@ export default function SignUp() {
                 progress: undefined,
                 theme: "light",
             });
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -119,6 +128,23 @@ export default function SignUp() {
                             onChange={e => setFullName(e.target.value)}
                             autoFocus
                         />
+                        <div className="my-3">
+                            <label
+                                htmlFor="type"
+                                className="block text-gray-600 font-semibold mb-2 md:text-sm"
+                            >
+                                Join as a :
+                            </label>
+                            <select
+                                id="type"
+                                className="w-full border border-gray-400 h-10 px-1 rounded-xl"
+                                onChange={(e) => setUserType(e.target.value)}
+                            >
+                                <option value="" disabled defaultChecked>Type</option>
+                                <option value={"User"}>User</option>
+                                <option value={"Vendor"}>Vendor</option>
+                            </select>
+                        </div>
                         <TextField
                             margin="normal"
                             required
@@ -141,14 +167,15 @@ export default function SignUp() {
                             autoComplete="current-password"
                             onChange={e => setPassword(e.target.value)}
                         />
-                        <Button
+                        {loading ? <CircularColor /> : <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
                             Sign Up
-                        </Button>
+                        </Button>}
+
                         <Grid container>
                             <Grid item>
                                 <Link to={'/login'} href="#" variant="body2">

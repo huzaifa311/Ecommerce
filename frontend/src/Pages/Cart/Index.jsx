@@ -8,19 +8,19 @@ const Cart = () => {
     console.log(items, 'cart items');
     return (
         <>
-            <div className='flex flex-col place-items-center bg-gray-200'>
-                <div className='max-w-[1800px] bg-green-200 py-3'>
+            <div className='flex flex-col place-items-center '>
+                <div className='max-w-[1800px] py-3'>
                     <Box>
-                        <Grid container columnSpacing={2} rowSpacing={2}>
+                        <div className='flex flex-wrap gap-8'>
                             {items.length &&
-                                items.map((product) => {
+                                items.map((product, index) => {
                                     return (
-                                        <Grid key={product.product_id} item lg={4} md={4} sm={6} xs={12}>
-                                            <ProductCard product={product} removeCart={true} />
-                                        </Grid>
+                                        // <Grid key={index} item lg={3} md={4} sm={6} xs={12}>
+                                            <ProductCard key={index} product={product} removeCart={true} />
+                                        // </Grid>
                                     );
                                 })}
-                        </Grid>
+                        </div>
                         {!items.length && (
                             <h1 className="text-center mt-10 text-2xl">NO ITEM IN CART</h1>
                         )}

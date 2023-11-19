@@ -13,6 +13,10 @@ const schema = new mongoose.Schema({
         type: String,
         required: true
     },
+    user_type: {
+        type: String,
+        require: true
+    },
     isVerify: {
         default: false,
         require: true,

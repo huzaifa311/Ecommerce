@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { Cart, Home, OTPCode, SignIn, SignUp } from '../Pages'
+import { Cart, Home, OTPCode, SignIn, SignUp, Vendor } from '../Pages'
 import AuthRoute from './AuthRoute'
 import ProtectedRoute from './ProtectedRoute'
 
@@ -17,10 +17,11 @@ const Routing = () => {
         </Route>
 
         {/* Protected Route */}
-        <Route element={<ProtectedRoute />}>
+        {/* <Route element={<ProtectedRoute />}> */}
           <Route index element={<Home />} />
+          <Route path='/vendor' element={<Vendor />} />
           <Route path="/cart" element={<Cart />} />
-        </Route>
+        {/* </Route> */}
 
       </Routes>
     </>
